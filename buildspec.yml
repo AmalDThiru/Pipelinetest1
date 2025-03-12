@@ -7,14 +7,43 @@ phases:
   pre_build:
     commands:
       - echo "Starting pre-build phase"
-      - git init  # Initialize git repository
-      - git add .  # Add all files
+      - git init
+      - git add .
+      - git config --global user.email "temp@example.com"
+      - git config --global user.name "CodeBuild"
+      - gitBased on the logs you've provided, the build is failing because of a `git log` command that's being executed before any commits have been made. Here's what's happening:
+
+1. The build process is initializing a new git repository (`git init`).
+2. It's adding all files to the staging area (`git add .`).
+3. It's trying to run `git log`, but there are no commits yet, causing the failure.
+
+To fix this, you need to modify your buildspec.yml. Here's a corrected version that should work:
+
+```yaml
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 12
+  pre_build:
+    commands:
+      - echo "Starting pre-build phase"
+      - git init
+      - git add .
+      - git config --global user.email "you@example.com"
+      - git config --global user.name "Your Name"
+      - git commit -m "Initial commit"
   build:
     commands:
       - echo "Starting build phase"
-      - git status  # Now this should work
-      - git log  # And this too
+      - git status
+      - git log
+  post_build:
+    commands:
+      - echo "Build completed"
 
 artifacts:
   files:
     - '**/*'
+  discard-paths: no
